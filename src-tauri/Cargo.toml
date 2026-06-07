@@ -1,0 +1,31 @@
+[package]
+name = "file2png"
+version = "0.1.0"
+description = "Encode any file into PNG images and decode back"
+authors = ["you"]
+edition = "2021"
+
+[lib]
+name = "file2png_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+image = { version = "0.25", features = ["png"] }
+md-5 = "0.10"
+anyhow = "1"
+
+[dev-dependencies]
+tempfile = "3"
+
+[profile.release]
+codegen-units = 1
+lto = "thin"
+opt-level = "s"
+strip = "symbols"
