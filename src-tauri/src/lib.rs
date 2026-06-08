@@ -33,7 +33,7 @@ fn init_system_proxy() {
     let proxy_enabled = winreg::RegKey::predef(winreg::enums::HKEY_CURRENT_USER)
         .open_subkey(r"Software\Microsoft\Windows\CurrentVersion\Internet Settings")
         .ok()
-        .and_then(|key| key.get_value::<u32>("ProxyEnable").ok())
+        .and_then(|key| key.get_value::<u32, _>("ProxyEnable").ok())
         .unwrap_or(0);
 
     if proxy_enabled == 0 {
