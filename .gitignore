@@ -30,3 +30,5 @@ desktop.ini
 
 # Keys (keep local only, never commit to public repo)
 docs/updater-keys.md
+keys
+keys.pub
