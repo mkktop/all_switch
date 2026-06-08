@@ -28,7 +28,7 @@
   },
   "plugins": {
     "updater": {
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDkwMTk3RUQwQTBEOTlGRDgKUldTUUdYN1FvTm1mMkNMRjhlcUsyMzNjNjk5KzgvdXBSc21pdGVlVWhZdFFlVGNMdk5wSjJuZVkK",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDc4MERDOENENzk3QTM4QUYKUldSNERjak5lWG80citmY0ZOUityZGFDU1JrZDlNeWR5bnBUVDZ4cmg3Ti9rL3hLdkZPUGdlbjI=",
       "endpoints": [
         "https://github.com/mkktop/all_switch/releases/latest/download/latest.json"
       ]
