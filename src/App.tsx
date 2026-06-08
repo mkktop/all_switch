@@ -35,34 +35,31 @@ export default function App() {
     <div className="flex flex-col h-screen bg-gray-50 text-gray-900">
       {/* 顶部标题栏 */}
       <header className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200">
-        <h1 className="text-lg font-bold text-gray-800">File2PNG</h1>
-        <div className="flex items-center gap-4">
-          {/* 版本号 + 检查更新 */}
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-gray-400">v{version}</span>
+        <div className="flex items-center gap-2">
+          <h1 className="text-lg font-bold text-gray-800">File2PNG</h1>
+          <span className="text-xs text-gray-400">v{version}</span>
+          <button
+            onClick={checkUpdate}
+            disabled={isChecking || phase === "downloading"}
+            className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50"
+          >
+            <RefreshCw size={12} className={isChecking ? "animate-spin" : ""} />
+            {isChecking ? "检查中..." : "检查更新"}
+          </button>
+          {hasUpdate && (
             <button
-              onClick={checkUpdate}
-              disabled={isChecking || phase === "downloading"}
-              className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50"
+              onClick={installUpdate}
+              className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-50 text-green-600 text-xs font-medium hover:bg-green-100 transition-colors"
             >
-              <RefreshCw size={12} className={isChecking ? "animate-spin" : ""} />
-              {isChecking ? "检查中..." : "检查更新"}
+              <ArrowUp size={12} />
+              v{updateInfo.version}
             </button>
-            {hasUpdate && (
-              <button
-                onClick={installUpdate}
-                className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-50 text-green-600 text-xs font-medium hover:bg-green-100 transition-colors"
-              >
-                <ArrowUp size={12} />
-                v{updateInfo.version}
-              </button>
-            )}
-            {phase === "upToDate" && (
-              <span className="text-xs text-green-500">已是最新</span>
-            )}
-          </div>
-          <ModeSwitch mode={mode} onChange={setMode} />
+          )}
+          {phase === "upToDate" && (
+            <span className="text-xs text-green-500">已是最新</span>
+          )}
         </div>
+        <ModeSwitch mode={mode} onChange={setMode} />
       </header>
 
       {/* 操作栏 */}
