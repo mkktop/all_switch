@@ -27,3 +27,6 @@ desktop.ini
 .idea/
 *.swp
 *.swo
+
+# Keys (keep local only, never commit to public repo)
+docs/updater-keys.md
