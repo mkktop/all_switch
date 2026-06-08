@@ -50,6 +50,7 @@ jobs:
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
         with:
           tagName: ${{ github.ref_name }}
           releaseName: "File2PNG ${{ github.ref_name }}"
@@ -57,3 +58,66 @@ jobs:
           releaseDraft: false
           prerelease: false
           tauriScript: pnpm tauri
+
+  assemble-latest-json:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_OUTPUT
+
+      - name: Download release assets
+        uses: robinraju/release-downloader@v1
+        with:
+          tag: ${{ github.ref_name }}
+          filename: "*"
+          out-file-path: "assets"
+
+      - name: Generate latest.json
+        run: |
+          VERSION="${{ steps.version.outputs.VERSION }}"
+          TAG="${{ github.ref_name }}"
+          PUB_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+          MSI_SIG=""
+          MSI_URL=""
+
+          cd assets
+
+          for f in *.sig; do
+            SIG=$(cat "$f")
+            BASENAME="${f%.sig}"
+
+            if [[ "$BASENAME" == *.msi ]]; then
+              MSI_SIG="$SIG"
+              MSI_URL="https://github.com/mkktop/all_switch/releases/download/${TAG}/${BASENAME}"
+            fi
+          done
+
+          cat > ../latest.json << EOF
+          {
+            "version": "${VERSION}",
+            "notes": "Release v${VERSION}",
+            "pub_date": "${PUB_DATE}",
+            "platforms": {
+              "windows-x86_64": {
+                "signature": "${MSI_SIG}",
+                "url": "${MSI_URL}"
+              }
+            }
+          }
+          EOF
+
+          cat ../latest.json
+
+      - name: Upload latest.json to release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          files: latest.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

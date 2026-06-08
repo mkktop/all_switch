@@ -88,7 +88,7 @@
             <!-- launch app checkbox -->
             <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="LaunchApplication">WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 and NOT Installed</Publish>
 
-            <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
+            <Property Id="WIXUI_INSTALLDIR" Value="INSTALLPARENT" />
 
             {{#unless license}}
             <!-- Skip license dialog -->
@@ -123,7 +123,7 @@
                 </Component>
             </Directory>
             <Directory Id="LocalAppDataFolder">
-                <Directory Id="TauriLocalAppDataPrograms" Name="Programs">
+                <Directory Id="INSTALLPARENT" Name="Programs">
                     <Directory Id="INSTALLDIR" Name="{{product_name}}"/>
                 </Directory>
             </Directory>
@@ -189,8 +189,8 @@
 						  Target="[System64Folder]msiexec.exe"
 						  Arguments="/x [ProductCode]" />
 
-                <RemoveFile Id="RemoveUserProgramsFiles" Directory="TauriLocalAppDataPrograms" Name="*" On="uninstall" />
-                <RemoveFolder Id="RemoveUserProgramsFolder" Directory="TauriLocalAppDataPrograms" On="uninstall" />
+                <RemoveFile Id="RemoveUserProgramsFiles" Directory="INSTALLPARENT" Name="*" On="uninstall" />
+                <RemoveFolder Id="RemoveUserProgramsFolder" Directory="INSTALLPARENT" On="uninstall" />
 
 				<RemoveFolder Id="INSTALLDIR"
 							  On="uninstall" />

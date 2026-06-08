@@ -1,6 +1,7 @@
 import { ModeSwitch } from "./components/ModeSwitch";
 import { ActionBar } from "./components/ActionBar";
 import { FileList } from "./components/FileList";
+import { UpdateBadge } from "./components/UpdateBadge";
 import { useFileList } from "./hooks/useFileList";
 
 export default function App() {
@@ -40,6 +41,9 @@ export default function App() {
       <div className="flex-1 overflow-hidden px-6 py-2">
         <FileList files={files} onRemove={removeFile} />
       </div>
+
+      {/* 更新提示 */}
+      <UpdateBadge />
     </div>
   );
 }
