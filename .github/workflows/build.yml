@@ -62,7 +62,30 @@ jobs:
         with:
           tagName: ${{ github.ref_name }}
           releaseName: "File2PNG ${{ github.ref_name }}"
-          releaseBody: "See the assets below to download and install."
+          releaseBody: |
+            ## 🖼️ File2PNG
+
+            将任意文件编码为 PNG 图片，并能从 PNG 无损还原。适用于只能上传图片的网盘（如一刻相册）。
+
+            ## 📥 安装
+
+            1. 下载下方 `.msi` 文件
+            2. 双击运行，按提示安装
+            3. 安装路径会自动追加 `File2PNG` 子文件夹（例如选 `D:\Software` → 实际装到 `D:\Software\File2PNG`）
+
+            ## 🔄 升级
+
+            - **自动更新**：已安装旧版本的用户，启动应用后会自动检测新版本，点击右下角弹窗中的「立即更新」即可
+            - **手动更新**：下载最新 `.msi` 重新安装，覆盖旧版本
+
+            ## 📋 使用方法
+
+            | 模式 | 操作 |
+            |------|------|
+            | 文件 → 图片 | 添加任意文件，点击「开始转换」，生成 PNG |
+            | 图片 → 文件 | 添加编码后的 PNG，点击「开始转换」，还原原始文件 |
+
+            > ⚠️ 请确保上传到网盘的是**原始 PNG 文件**，不要被网盘压缩或转码
           releaseDraft: false
           prerelease: false
           tauriScript: pnpm tauri
