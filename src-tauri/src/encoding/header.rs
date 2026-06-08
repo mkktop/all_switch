@@ -77,6 +77,7 @@ impl Header {
     }
 
     /// Total serialized size in bytes.
+    #[allow(dead_code)]
     pub fn size(&self) -> usize {
         4 + 2 + self.filename.as_bytes().len() + 8 + 16
     }
