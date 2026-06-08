@@ -5,6 +5,15 @@ use md5::{Digest, Md5};
 
 use super::header::Header;
 
+/// Get the default output directory: <exe_dir>/out/
+fn default_output_dir() -> PathBuf {
+    let exe_dir = std::env::current_exe()
+        .ok()
+        .and_then(|p| p.parent().map(|d| d.to_path_buf()))
+        .unwrap_or_else(|| PathBuf::from("."));
+    exe_dir.join("out")
+}
+
 /// Calculate image resolution for a given number of data bytes.
 /// Uses 16:9 aspect ratio, each pixel stores 3 bytes (RGB).
 fn calculate_resolution(total_bytes: usize) -> (u32, u32) {
@@ -67,10 +76,10 @@ pub fn encode_file(input_path: &str, output_dir: Option<&str>) -> anyhow::Result
     let img = RgbImage::from_raw(width, height, pixel_data)
         .ok_or_else(|| anyhow::anyhow!("无法创建图片"))?;
 
-    // Determine output path
+    // Determine output path (default: <exe_dir>/out/)
     let out_dir = match output_dir {
         Some(dir) => PathBuf::from(dir),
-        None => input.parent().unwrap_or(Path::new(".")).to_path_buf(),
+        None => default_output_dir(),
     };
     std::fs::create_dir_all(&out_dir)?;
 
@@ -125,10 +134,10 @@ pub fn decode_file(input_path: &str, output_dir: Option<&str>) -> anyhow::Result
         );
     }
 
-    // Determine output path
+    // Determine output path (default: <exe_dir>/out/)
     let out_dir = match output_dir {
         Some(dir) => PathBuf::from(dir),
-        None => input.parent().unwrap_or(Path::new(".")).to_path_buf(),
+        None => default_output_dir(),
     };
     std::fs::create_dir_all(&out_dir)?;
 
