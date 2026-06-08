@@ -7,8 +7,16 @@ let nextId = 0;
 
 export function useFileList() {
   const [mode, setMode] = useState<Mode>("encode");
-  const [files, setFiles] = useState<FileEntry[]>([]);
-  const [outputDir, setOutputDir] = useState<string>("");
+  // Independent file lists per mode
+  const [encodeFiles, setEncodeFiles] = useState<FileEntry[]>([]);
+  const [decodeFiles, setDecodeFiles] = useState<FileEntry[]>([]);
+  const [encodeOutputDir, setEncodeOutputDir] = useState<string>("");
+  const [decodeOutputDir, setDecodeOutputDir] = useState<string>("");
+
+  // Derived state for current mode
+  const files = mode === "encode" ? encodeFiles : decodeFiles;
+  const outputDir = mode === "encode" ? encodeOutputDir : decodeOutputDir;
+  const setFiles = mode === "encode" ? setEncodeFiles : setDecodeFiles;
 
   const addFiles = useCallback(async () => {
     const filters =
@@ -29,25 +37,27 @@ export function useFileList() {
       return { id: String(++nextId), path: p, name, size: 0, status: "pending" as FileStatus };
     });
     setFiles((prev) => [...prev, ...entries]);
-  }, [mode]);
+  }, [mode, setFiles]);
 
   const removeFile = useCallback((id: string) => {
     setFiles((prev) => prev.filter((f) => f.id !== id));
-  }, []);
+  }, [setFiles]);
 
   const clearFiles = useCallback(() => {
     setFiles([]);
-  }, []);
+  }, [setFiles]);
 
   const selectOutputDir = useCallback(async () => {
     const dir = await open({ directory: true, multiple: false });
     if (dir && typeof dir === "string") {
-      setOutputDir(dir);
+      if (mode === "encode") setEncodeOutputDir(dir);
+      else setDecodeOutputDir(dir);
     }
-  }, []);
+  }, [mode]);
 
   const startProcessing = useCallback(async () => {
     const command = mode === "encode" ? "encode_file" : "decode_file";
+    const currentOutputDir = mode === "encode" ? encodeOutputDir : decodeOutputDir;
 
     for (const file of files) {
       if (file.status === "done") continue;
@@ -59,7 +69,7 @@ export function useFileList() {
       try {
         const result = await invoke<string>(command, {
           path: file.path,
-          outputDir: outputDir || null,
+          outputDir: currentOutputDir || null,
         });
         setFiles((prev) =>
           prev.map((f) =>
@@ -76,7 +86,7 @@ export function useFileList() {
         );
       }
     }
-  }, [mode, files, outputDir]);
+  }, [mode, files, encodeOutputDir, decodeOutputDir, setFiles]);
 
   return {
     mode,
