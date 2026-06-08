@@ -3,6 +3,7 @@ mod commands;
 
 use commands::encode::encode_file;
 use commands::decode::decode_file;
+use commands::settings::{get_settings, save_settings};
 
 // Re-export for integration tests
 pub use encoding::encoder::{encode_file as _encode_impl, decode_file as _decode_impl};
@@ -22,7 +23,7 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
-        .invoke_handler(tauri::generate_handler![encode_file, decode_file])
+        .invoke_handler(tauri::generate_handler![encode_file, decode_file, get_settings, save_settings])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

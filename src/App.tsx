@@ -4,11 +4,17 @@ import { ModeSwitch } from "./components/ModeSwitch";
 import { ActionBar } from "./components/ActionBar";
 import { FileList } from "./components/FileList";
 import { UpdateBadge } from "./components/UpdateBadge";
+import { SettingsPage } from "./components/SettingsPage";
 import { useFileList } from "./hooks/useFileList";
 import { useUpdate } from "./contexts/UpdateContext";
-import { RefreshCw, ArrowUp } from "lucide-react";
+import { useSettings } from "./hooks/useSettings";
+import { RefreshCw, ArrowUp, Settings } from "lucide-react";
+
+type View = "main" | "settings";
 
 export default function App() {
+  const [currentView, setCurrentView] = useState<View>("main");
+
   const {
     mode,
     setMode,
@@ -22,6 +28,7 @@ export default function App() {
   } = useFileList();
 
   const { phase, updateInfo, checkUpdate, installUpdate } = useUpdate();
+  const { settings, save } = useSettings();
   const [version, setVersion] = useState("");
 
   useEffect(() => {
@@ -31,6 +38,25 @@ export default function App() {
   const isChecking = phase === "checking";
   const hasUpdate = phase === "available" && updateInfo;
 
+  const handleSaveSettings = async (dir: string) => {
+    await save({ default_output_dir: dir });
+  };
+
+  // Settings view
+  if (currentView === "settings") {
+    return (
+      <div className="flex flex-col h-screen bg-gray-50 text-gray-900">
+        <SettingsPage
+          defaultOutputDir={settings.default_output_dir}
+          onSave={handleSaveSettings}
+          onBack={() => setCurrentView("main")}
+        />
+        <UpdateBadge />
+      </div>
+    );
+  }
+
+  // Main view
   return (
     <div className="flex flex-col h-screen bg-gray-50 text-gray-900">
       {/* 顶部标题栏 */}
@@ -38,6 +64,13 @@ export default function App() {
         <div className="flex items-center gap-2">
           <h1 className="text-lg font-bold text-gray-800">File2PNG</h1>
           <span className="text-xs text-gray-400">v{version}</span>
+          <button
+            onClick={() => setCurrentView("settings")}
+            title="设置"
+            className="p-1 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+          >
+            <Settings size={16} />
+          </button>
           <button
             onClick={checkUpdate}
             disabled={isChecking || phase === "downloading"}
