@@ -1,8 +1,12 @@
+import { getVersion } from "@tauri-apps/api/app";
+import { useEffect, useState } from "react";
 import { ModeSwitch } from "./components/ModeSwitch";
 import { ActionBar } from "./components/ActionBar";
 import { FileList } from "./components/FileList";
 import { UpdateBadge } from "./components/UpdateBadge";
 import { useFileList } from "./hooks/useFileList";
+import { useUpdate } from "./contexts/UpdateContext";
+import { RefreshCw, ArrowUp } from "lucide-react";
 
 export default function App() {
   const {
@@ -17,12 +21,48 @@ export default function App() {
     startProcessing,
   } = useFileList();
 
+  const { phase, updateInfo, checkUpdate, installUpdate } = useUpdate();
+  const [version, setVersion] = useState("");
+
+  useEffect(() => {
+    getVersion().then((v) => setVersion(v));
+  }, []);
+
+  const isChecking = phase === "checking";
+  const hasUpdate = phase === "available" && updateInfo;
+
   return (
     <div className="flex flex-col h-screen bg-gray-50 text-gray-900">
       {/* 顶部标题栏 */}
       <header className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200">
         <h1 className="text-lg font-bold text-gray-800">File2PNG</h1>
-        <ModeSwitch mode={mode} onChange={setMode} />
+        <div className="flex items-center gap-4">
+          {/* 版本号 + 检查更新 */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-gray-400">v{version}</span>
+            <button
+              onClick={checkUpdate}
+              disabled={isChecking || phase === "downloading"}
+              className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50"
+            >
+              <RefreshCw size={12} className={isChecking ? "animate-spin" : ""} />
+              {isChecking ? "检查中..." : "检查更新"}
+            </button>
+            {hasUpdate && (
+              <button
+                onClick={installUpdate}
+                className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-50 text-green-600 text-xs font-medium hover:bg-green-100 transition-colors"
+              >
+                <ArrowUp size={12} />
+                v{updateInfo.version}
+              </button>
+            )}
+            {phase === "upToDate" && (
+              <span className="text-xs text-green-500">已是最新</span>
+            )}
+          </div>
+          <ModeSwitch mode={mode} onChange={setMode} />
+        </div>
       </header>
 
       {/* 操作栏 */}
@@ -42,7 +82,7 @@ export default function App() {
         <FileList files={files} onRemove={removeFile} />
       </div>
 
-      {/* 更新提示 */}
+      {/* 更新提示弹窗 */}
       <UpdateBadge />
     </div>
   );
