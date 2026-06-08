@@ -83,6 +83,9 @@ export function UpdateProvider({ children }: { children: ReactNode }) {
       localStorage.setItem(DISMISSED_KEY, updateInfo.version);
       setIsDismissed(true);
     }
+    // Always reset phase so the popup closes
+    setPhase("idle");
+    setError(null);
   }, [updateInfo]);
 
   return (

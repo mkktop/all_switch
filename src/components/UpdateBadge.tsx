@@ -42,7 +42,7 @@ export function UpdateBadge() {
             </>
           )}
         </div>
-        {!isDownloading && phase !== "error" && (
+        {!isDownloading && (
           <button
             onClick={dismiss}
             className="text-gray-400 hover:text-gray-600 transition-colors"
