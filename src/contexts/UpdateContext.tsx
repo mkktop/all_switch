@@ -8,6 +8,7 @@ import {
 } from "react";
 import {
   checkForUpdate,
+  justUpdated,
   type UpdaterPhase,
   type UpdateInfo,
 } from "../lib/updater";
@@ -32,9 +33,15 @@ export function UpdateProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const [isDismissed, setIsDismissed] = useState(false);
 
-  // Auto-check on mount (with 2s delay)
+  // Auto-check on mount (skip if we just updated)
   useEffect(() => {
-    const timer = setTimeout(() => {
+    const timer = setTimeout(async () => {
+      const wasJustUpdated = await justUpdated();
+      if (wasJustUpdated) {
+        // Just updated to new version, skip check, show "up to date"
+        setPhase("upToDate");
+        return;
+      }
       checkUpdate();
     }, 2000);
     return () => clearTimeout(timer);
