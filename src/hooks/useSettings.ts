@@ -3,6 +3,7 @@ import { invoke } from "@tauri-apps/api/core";
 
 export interface AppSettings {
   default_output_dir: string;
+  filename_suffix: string;
 }
 
 export function useSettings() {

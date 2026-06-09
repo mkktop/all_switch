@@ -50,7 +50,7 @@ fn calculate_resolution(total_bytes: usize) -> (u32, u32) {
 
 /// Encode a file into a PNG image.
 /// Returns the path to the generated PNG.
-pub fn encode_file(input_path: &str, output_dir: Option<&str>) -> anyhow::Result<String> {
+pub fn encode_file(input_path: &str, output_dir: Option<&str>, filename_suffix: Option<&str>) -> anyhow::Result<String> {
     let input = Path::new(input_path);
     if !input.exists() {
         anyhow::bail!("文件不存在: {}", input_path);
@@ -110,8 +110,9 @@ pub fn encode_file(input_path: &str, output_dir: Option<&str>) -> anyhow::Result
     std::fs::create_dir_all(&out_dir)?;
 
     let output_name = format!(
-        "{}.png",
-        input.file_stem().unwrap_or_default().to_string_lossy()
+        "{}{}.png",
+        input.file_stem().unwrap_or_default().to_string_lossy(),
+        filename_suffix.unwrap_or("")
     );
     let output_path = unique_output_path(&out_dir, &output_name);
 

@@ -56,7 +56,7 @@ export function useFileList() {
     }
   }, [mode]);
 
-  const startProcessing = useCallback(async () => {
+  const startProcessing = useCallback(async (filenameSuffix?: string) => {
     if (isProcessing) return;
     const command = mode === "encode" ? "encode_file" : "decode_file";
     const currentOutputDir = mode === "encode" ? encodeOutputDir : decodeOutputDir;
@@ -74,6 +74,7 @@ export function useFileList() {
           const result = await invoke<string>(command, {
             path: file.path,
             outputDir: currentOutputDir || null,
+            filenameSuffix: mode === "encode" ? (filenameSuffix ?? null) : null,
           });
           setFiles((prev) =>
             prev.map((f) =>

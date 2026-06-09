@@ -39,8 +39,8 @@ export default function App() {
   const isChecking = phase === "checking";
   const hasUpdate = phase === "available" && updateInfo;
 
-  const handleSaveSettings = async (dir: string) => {
-    await save({ default_output_dir: dir });
+  const handleSaveSettings = async (settings: { default_output_dir: string; filename_suffix: string }) => {
+    await save(settings);
   };
 
   // Settings view
@@ -49,6 +49,7 @@ export default function App() {
       <div className="flex flex-col h-screen bg-gray-50 text-gray-900">
         <SettingsPage
           defaultOutputDir={settings.default_output_dir}
+          filenameSuffix={settings.filename_suffix}
           onSave={handleSaveSettings}
           onBack={() => setCurrentView("main")}
         />
@@ -102,7 +103,7 @@ export default function App() {
           outputDir={outputDir}
           onAddFiles={addFiles}
           onSelectOutputDir={selectOutputDir}
-          onStart={startProcessing}
+          onStart={() => startProcessing(settings.filename_suffix || undefined)}
           onClear={clearFiles}
           hasFiles={files.length > 0}
           isProcessing={isProcessing}

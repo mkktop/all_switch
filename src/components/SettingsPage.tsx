@@ -4,12 +4,14 @@ import { FolderOpen, ArrowLeft, Check } from "lucide-react";
 
 interface SettingsPageProps {
   defaultOutputDir: string;
-  onSave: (dir: string) => Promise<void>;
+  filenameSuffix: string;
+  onSave: (settings: { default_output_dir: string; filename_suffix: string }) => Promise<void>;
   onBack: () => void;
 }
 
-export function SettingsPage({ defaultOutputDir, onSave, onBack }: SettingsPageProps) {
+export function SettingsPage({ defaultOutputDir, filenameSuffix, onSave, onBack }: SettingsPageProps) {
   const [dir, setDir] = useState(defaultOutputDir);
+  const [suffix, setSuffix] = useState(filenameSuffix);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
@@ -21,7 +23,7 @@ export function SettingsPage({ defaultOutputDir, onSave, onBack }: SettingsPageP
     }
   };
 
-  const handleReset = () => {
+  const handleResetDir = () => {
     setDir("");
     setSaved(false);
   };
@@ -29,7 +31,7 @@ export function SettingsPage({ defaultOutputDir, onSave, onBack }: SettingsPageP
   const handleSave = async () => {
     setSaving(true);
     try {
-      await onSave(dir);
+      await onSave({ default_output_dir: dir, filename_suffix: suffix });
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     } finally {
@@ -78,13 +80,30 @@ export function SettingsPage({ defaultOutputDir, onSave, onBack }: SettingsPageP
               </button>
               {dir && (
                 <button
-                  onClick={handleReset}
+                  onClick={handleResetDir}
                   className="px-3 py-2 text-sm text-gray-500 hover:text-gray-700 transition-colors"
                 >
                   重置
                 </button>
               )}
             </div>
+          </div>
+
+          {/* 自定义文件名后缀 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              自定义文件名后缀
+            </label>
+            <p className="text-xs text-gray-500 mb-3">
+              编码时追加到输出文件名末尾。例如后缀为 <code className="bg-gray-100 px-1 rounded text-xs">new</code>，则 <code className="bg-gray-100 px-1 rounded text-xs">123.mp4</code> → <code className="bg-gray-100 px-1 rounded text-xs">123new.png</code>
+            </p>
+            <input
+              type="text"
+              value={suffix}
+              onChange={(e) => { setSuffix(e.target.value); setSaved(false); }}
+              placeholder="不设置（使用原文件名）"
+              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-400"
+            />
           </div>
         </div>
       </div>

@@ -18,6 +18,7 @@ fn test_encode_decode_roundtrip_text() {
     let png_path = file2png_lib::encode_file_direct(
         input_path.to_string_lossy().to_string(),
         Some(output_dir.to_string_lossy().to_string()),
+        None,
     )
     .unwrap();
 
@@ -68,6 +69,7 @@ fn test_encode_decode_roundtrip_binary() {
     let png_path = file2png_lib::encode_file_direct(
         input_path.to_string_lossy().to_string(),
         Some(output_dir.to_string_lossy().to_string()),
+        None,
     )
     .unwrap();
 

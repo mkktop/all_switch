@@ -9,8 +9,8 @@ use commands::settings::{get_settings, save_settings};
 pub use encoding::encoder::{encode_file as _encode_impl, decode_file as _decode_impl};
 
 /// Encode a file into a PNG image. Returns the output PNG path.
-pub fn encode_file_direct(path: String, output_dir: Option<String>) -> anyhow::Result<String> {
-    encoding::encoder::encode_file(&path, output_dir.as_deref())
+pub fn encode_file_direct(path: String, output_dir: Option<String>, filename_suffix: Option<String>) -> anyhow::Result<String> {
+    encoding::encoder::encode_file(&path, output_dir.as_deref(), filename_suffix.as_deref())
 }
 
 /// Decode a PNG image back to the original file. Returns the output file path.

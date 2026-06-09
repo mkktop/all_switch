@@ -5,12 +5,15 @@ use std::path::PathBuf;
 pub struct AppSettings {
     #[serde(default)]
     pub default_output_dir: String,
+    #[serde(default)]
+    pub filename_suffix: String,
 }
 
 impl Default for AppSettings {
     fn default() -> Self {
         Self {
             default_output_dir: String::new(),
+            filename_suffix: String::new(),
         }
     }
 }
