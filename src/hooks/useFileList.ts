@@ -7,6 +7,7 @@ let nextId = 0;
 
 export function useFileList() {
   const [mode, setMode] = useState<Mode>("encode");
+  const [isProcessing, setIsProcessing] = useState(false);
   // Independent file lists per mode
   const [encodeFiles, setEncodeFiles] = useState<FileEntry[]>([]);
   const [decodeFiles, setDecodeFiles] = useState<FileEntry[]>([]);
@@ -56,43 +57,50 @@ export function useFileList() {
   }, [mode]);
 
   const startProcessing = useCallback(async () => {
+    if (isProcessing) return;
     const command = mode === "encode" ? "encode_file" : "decode_file";
     const currentOutputDir = mode === "encode" ? encodeOutputDir : decodeOutputDir;
 
-    for (const file of files) {
-      if (file.status === "done") continue;
+    setIsProcessing(true);
+    try {
+      for (const file of files) {
+        if (file.status === "done") continue;
 
-      setFiles((prev) =>
-        prev.map((f) => (f.id === file.id ? { ...f, status: "processing" as FileStatus } : f)),
-      );
+        setFiles((prev) =>
+          prev.map((f) => (f.id === file.id ? { ...f, status: "processing" as FileStatus } : f)),
+        );
 
-      try {
-        const result = await invoke<string>(command, {
-          path: file.path,
-          outputDir: currentOutputDir || null,
-        });
-        setFiles((prev) =>
-          prev.map((f) =>
-            f.id === file.id ? { ...f, status: "done" as FileStatus, outputPath: result } : f,
-          ),
-        );
-      } catch (err) {
-        setFiles((prev) =>
-          prev.map((f) =>
-            f.id === file.id
-              ? { ...f, status: "error" as FileStatus, errorMsg: String(err) }
-              : f,
-          ),
-        );
+        try {
+          const result = await invoke<string>(command, {
+            path: file.path,
+            outputDir: currentOutputDir || null,
+          });
+          setFiles((prev) =>
+            prev.map((f) =>
+              f.id === file.id ? { ...f, status: "done" as FileStatus, outputPath: result } : f,
+            ),
+          );
+        } catch (err) {
+          setFiles((prev) =>
+            prev.map((f) =>
+              f.id === file.id
+                ? { ...f, status: "error" as FileStatus, errorMsg: String(err) }
+                : f,
+            ),
+          );
+        }
       }
+    } finally {
+      setIsProcessing(false);
     }
-  }, [mode, files, encodeOutputDir, decodeOutputDir, setFiles]);
+  }, [mode, files, encodeOutputDir, decodeOutputDir, isProcessing, setFiles]);
 
   return {
     mode,
     setMode,
     files,
     outputDir,
+    isProcessing,
     addFiles,
     removeFile,
     clearFiles,

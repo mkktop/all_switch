@@ -5,6 +5,31 @@ use md5::{Digest, Md5};
 
 use super::header::Header;
 
+/// Find a non-conflicting output path by appending (1), (2), ... if needed.
+/// e.g. "out/test.png" -> "out/test (1).png", "out/test (2).png"
+fn unique_output_path(dir: &Path, name: &str) -> PathBuf {
+    let path = dir.join(name);
+    if !path.exists() {
+        return path;
+    }
+    let stem = Path::new(name)
+        .file_stem()
+        .unwrap_or_default()
+        .to_string_lossy();
+    let ext = Path::new(name)
+        .extension()
+        .map(|e| format!(".{}", e.to_string_lossy()))
+        .unwrap_or_default();
+    for i in 1u32.. {
+        let candidate = dir.join(format!("{} ({}){}", stem, i, ext));
+        if !candidate.exists() {
+            return candidate;
+        }
+    }
+    // Fallback (practically unreachable)
+    path
+}
+
 /// Get the default output directory: <exe_dir>/out/
 fn default_output_dir() -> PathBuf {
     let exe_dir = std::env::current_exe()
@@ -61,12 +86,13 @@ pub fn encode_file(input_path: &str, output_dir: Option<&str>) -> anyhow::Result
 
     // Ensure we have enough pixels
     let total_capacity = (width * height) as usize * 3;
-    assert!(
-        total_capacity >= all_bytes.len(),
-        "分辨率计算错误: 需要 {} 字节，但只有 {} 字节空间",
-        all_bytes.len(),
-        total_capacity
-    );
+    if total_capacity < all_bytes.len() {
+        anyhow::bail!(
+            "分辨率计算错误: 需要 {} 字节，但只有 {} 字节空间",
+            all_bytes.len(),
+            total_capacity
+        );
+    }
 
     // Create pixel buffer
     let mut pixel_data = vec![0u8; total_capacity];
@@ -87,7 +113,7 @@ pub fn encode_file(input_path: &str, output_dir: Option<&str>) -> anyhow::Result
         "{}.png",
         input.file_stem().unwrap_or_default().to_string_lossy()
     );
-    let output_path = out_dir.join(&output_name);
+    let output_path = unique_output_path(&out_dir, &output_name);
 
     // Save as PNG
     img.save_with_format(&output_path, ImageFormat::Png)?;
@@ -141,7 +167,15 @@ pub fn decode_file(input_path: &str, output_dir: Option<&str>) -> anyhow::Result
     };
     std::fs::create_dir_all(&out_dir)?;
 
-    let output_path = out_dir.join(&header.filename);
+    // Sanitize filename to prevent path traversal (e.g. "../../etc/passwd")
+    let safe_name = Path::new(&header.filename)
+        .file_name()
+        .unwrap_or_default()
+        .to_string_lossy();
+    if safe_name.is_empty() {
+        anyhow::bail!("无效的文件名: {}", header.filename);
+    }
+    let output_path = unique_output_path(&out_dir, safe_name.as_ref());
     std::fs::write(&output_path, file_data)?;
 
     Ok(output_path.to_string_lossy().to_string())

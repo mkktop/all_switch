@@ -20,6 +20,7 @@ export default function App() {
     setMode,
     files,
     outputDir,
+    isProcessing,
     addFiles,
     removeFile,
     clearFiles,
@@ -104,6 +105,7 @@ export default function App() {
           onStart={startProcessing}
           onClear={clearFiles}
           hasFiles={files.length > 0}
+          isProcessing={isProcessing}
         />
       </div>
 
