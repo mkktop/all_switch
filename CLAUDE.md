@@ -6,6 +6,18 @@ File2PNG 是一个桌面工具，将任意文件编码为 PNG 图片并可以无
 
 ## 版本变更记录
 
+### v0.2.0
+
+- **UI 重构**：设置页改为双 Tab 布局（通用 / 关于），参照 cc-switch 设计风格
+  - **通用 Tab**：输出目录、文件名后缀、保存按钮
+  - **关于 Tab**：应用信息卡片、版本号、GitHub 链接、检查更新、更新日志、自动更新开关
+- **新功能**：新增 `auto_update` 设置，控制启动时是否自动检查更新
+- **新功能**：添加 `tauri-plugin-opener`，GitHub 链接可正常跳转浏览器
+- **UI 迁移**：更新相关 UI 从标题栏和 UpdateBadge 浮窗迁移到关于 Tab
+- 标题栏设置齿轮图标在有更新时显示绿点提示
+- 删除 `UpdateBadge.tsx` 浮动弹窗组件
+- `UpdateContext` 自动检查前读取 `auto_update` 设置
+
 ### v0.1.7
 
 - **安全修复**：解码时 sanitize 文件名，防止路径穿越攻击（`../../etc/passwd`）
