@@ -17,7 +17,6 @@ export function SettingsPage({ settings, onSave, onBack }: SettingsPageProps) {
   const [activeTab, setActiveTab] = useState<Tab>("general");
   const [dir, setDir] = useState(settings.default_output_dir);
   const [suffix, setSuffix] = useState(settings.filename_suffix);
-  const [autoUpdate, setAutoUpdate] = useState(settings.auto_update);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
@@ -27,7 +26,7 @@ export function SettingsPage({ settings, onSave, onBack }: SettingsPageProps) {
       await onSave({
         default_output_dir: dir,
         filename_suffix: suffix,
-        auto_update: autoUpdate,
+        auto_update: settings.auto_update,
       });
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
@@ -73,10 +72,8 @@ export function SettingsPage({ settings, onSave, onBack }: SettingsPageProps) {
           <GeneralTab
             dir={dir}
             suffix={suffix}
-            autoUpdate={autoUpdate}
             onDirChange={(d) => { setDir(d); setSaved(false); }}
             onSuffixChange={(s) => { setSuffix(s); setSaved(false); }}
-            onAutoUpdateChange={(v) => { setAutoUpdate(v); setSaved(false); }}
             saving={saving}
             saved={saved}
             onSave={handleSave}

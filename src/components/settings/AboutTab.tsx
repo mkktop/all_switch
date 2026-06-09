@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { getVersion } from "@tauri-apps/api/app";
-import { invoke } from "@tauri-apps/api/core";
+import { openUrl } from "@tauri-apps/plugin-opener";
 import {
   FileImage,
   ExternalLink,
@@ -58,15 +58,13 @@ export function AboutTab() {
 
         {/* 操作按钮行 */}
         <div className="flex items-center gap-2 flex-wrap">
-          <a
-            href={GITHUB_URL}
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            onClick={() => openUrl(GITHUB_URL)}
             className="flex items-center gap-1.5 px-3 py-1.5 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-xs"
           >
             <ExternalLink size={14} />
             GitHub
-          </a>
+          </button>
 
           <button
             onClick={checkUpdate}

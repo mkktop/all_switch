@@ -1,14 +1,11 @@
 import { open } from "@tauri-apps/plugin-dialog";
 import { FolderOpen, Check } from "lucide-react";
-import { cn } from "../../lib/utils";
 
 interface GeneralTabProps {
   dir: string;
   suffix: string;
-  autoUpdate: boolean;
   onDirChange: (dir: string) => void;
   onSuffixChange: (suffix: string) => void;
-  onAutoUpdateChange: (val: boolean) => void;
   saving: boolean;
   saved: boolean;
   onSave: () => void;
@@ -17,10 +14,8 @@ interface GeneralTabProps {
 export function GeneralTab({
   dir,
   suffix,
-  autoUpdate,
   onDirChange,
   onSuffixChange,
-  onAutoUpdateChange,
   saving,
   saved,
   onSave,
@@ -92,37 +87,6 @@ export function GeneralTab({
               className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-400"
             />
           </div>
-        </div>
-      </section>
-
-      {/* 自动更新 */}
-      <section className="space-y-2">
-        <header className="space-y-1">
-          <h3 className="text-sm font-medium text-gray-700">自动更新</h3>
-          <p className="text-xs text-gray-400">启动时自动检查新版本</p>
-        </header>
-
-        <div className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-4">
-          <div className="space-y-1">
-            <p className="text-sm font-medium text-gray-700">自动检查更新</p>
-            <p className="text-xs text-gray-400">开启后每次启动应用时自动检查是否有新版本</p>
-          </div>
-          <button
-            role="switch"
-            aria-checked={autoUpdate}
-            onClick={() => onAutoUpdateChange(!autoUpdate)}
-            className={cn(
-              "relative inline-flex h-6 w-11 items-center rounded-full transition-colors shrink-0",
-              autoUpdate ? "bg-blue-500" : "bg-gray-300"
-            )}
-          >
-            <span
-              className={cn(
-                "inline-block h-4 w-4 rounded-full bg-white transform transition-transform shadow",
-                autoUpdate ? "translate-x-6" : "translate-x-1"
-              )}
-            />
-          </button>
         </div>
       </section>
 
