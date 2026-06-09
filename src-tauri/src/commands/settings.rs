@@ -7,6 +7,8 @@ pub struct AppSettings {
     pub default_output_dir: String,
     #[serde(default)]
     pub filename_suffix: String,
+    #[serde(default)]
+    pub auto_update: bool,
 }
 
 impl Default for AppSettings {
@@ -14,6 +16,7 @@ impl Default for AppSettings {
         Self {
             default_output_dir: String::new(),
             filename_suffix: String::new(),
+            auto_update: false,
         }
     }
 }

@@ -6,6 +6,7 @@ import {
   useCallback,
   type ReactNode,
 } from "react";
+import { invoke } from "@tauri-apps/api/core";
 import {
   checkForUpdate,
   justUpdated,
@@ -33,12 +34,19 @@ export function UpdateProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const [isDismissed, setIsDismissed] = useState(false);
 
-  // Auto-check on mount (skip if we just updated)
+  // Auto-check on mount, gated by auto_update setting
   useEffect(() => {
     const timer = setTimeout(async () => {
+      // Read auto_update setting directly (avoid provider nesting issues)
+      try {
+        const s = await invoke<{ auto_update: boolean }>("get_settings");
+        if (!s.auto_update) return;
+      } catch {
+        // If settings read fails, proceed with check
+      }
+
       const wasJustUpdated = await justUpdated();
       if (wasJustUpdated) {
-        // Just updated to new version, skip check, show "up to date"
         setPhase("upToDate");
         return;
       }

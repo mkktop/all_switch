@@ -4,10 +4,11 @@ import { invoke } from "@tauri-apps/api/core";
 export interface AppSettings {
   default_output_dir: string;
   filename_suffix: string;
+  auto_update: boolean;
 }
 
 export function useSettings() {
-  const [settings, setSettings] = useState<AppSettings>({ default_output_dir: "" });
+  const [settings, setSettings] = useState<AppSettings>({ default_output_dir: "", filename_suffix: "", auto_update: false });
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {

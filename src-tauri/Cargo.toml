@@ -1,6 +1,6 @@
 [package]
 name = "file2png"
-version = "0.1.7"
+version = "0.1.9"
 description = "Encode any file into PNG images and decode back"
 authors = ["you"]
 edition = "2021"
